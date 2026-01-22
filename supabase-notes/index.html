@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lost & Found</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+
+<h2>Lost & Found Items</h2>
+
+<ul id="itemsList"></ul>
+
+<script>
+  const SUPABASE_URL = "https://qjprgcioblvsblcdwjan.supabase.co"
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqcHJnY2lvYmx2c2JsY2R3amFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5ODY2NTMsImV4cCI6MjA4NDU2MjY1M30.vOW2nYsrc1PpZH3AnQIWKkv_YgXvAsTAU2rG1iCLpdk"
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  )
+
+  async function loadItems() {
+    const { data, error } = await supabaseClient
+      .from("items")
+      .select("*")
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    const list = document.getElementById("itemsList")
+    list.innerHTML = ""
+
+    data.forEach(item => {
+      const li = document.createElement("li")
+      li.innerHTML = `
+        <strong>${item.title}</strong> (${item.status})<br>
+        ${item.description || ""}<br>
+        📍 ${item.location}
+        <hr>
+      `
+      list.appendChild(li)
+    })
+  }
+
+  loadItems()
+</script>
+
+</body>
+</html>
+
